@@ -1,0 +1,13 @@
+{
+  "name": "blockchain-miniproject",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Root scripts for the Blockchain-Based AI Content Disclosure System",
+  "scripts": {
+    "start": "npm run start:backend & npm run start:frontend",
+    "dev": "npm run start",
+    "start:backend": "npm --prefix backend run start",
+    "start:frontend": "npm --prefix frontend run start",
+    "build": "npm --prefix frontend run build"
+  }
+}
