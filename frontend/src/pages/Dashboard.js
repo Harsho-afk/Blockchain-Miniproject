@@ -5,167 +5,11 @@ import StatCard from '../components/StatCard';
 import DisclosureCard from '../components/DisclosureCard';
 import ChainVisualizer from '../components/ChainVisualizer';
 
-const styles = {
-  page: { maxWidth: 1200, margin: '0 auto', padding: '40px 24px' },
-  hero: {
-    textAlign: 'center',
-    marginBottom: 56,
-    padding: '60px 24px 40px',
-  },
-  heroTag: {
-    display: 'inline-block',
-    padding: '4px 14px',
-    border: '1px solid rgba(0,229,255,0.3)',
-    borderRadius: 20,
-    fontSize: 11,
-    letterSpacing: '0.12em',
-    textTransform: 'uppercase',
-    color: 'var(--accent)',
-    fontFamily: 'var(--font-mono)',
-    marginBottom: 20,
-  },
-  heroTitle: {
-    fontSize: 'clamp(36px, 6vw, 60px)',
-    fontWeight: 800,
-    letterSpacing: '-0.03em',
-    lineHeight: 1.05,
-    color: 'var(--text)',
-    marginBottom: 16,
-    fontFamily: 'var(--font-sans)',
-  },
-  heroAccent: {
-    background: 'linear-gradient(90deg, var(--accent2), var(--accent))',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text',
-  },
-  heroSub: {
-    fontSize: 17,
-    color: 'var(--text2)',
-    maxWidth: 520,
-    margin: '0 auto 32px',
-    lineHeight: 1.6,
-  },
-  heroBtns: {
-    display: 'flex',
-    gap: 12,
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-  },
-  btnPrimary: {
-    padding: '12px 28px',
-    background: 'linear-gradient(135deg, var(--accent2), var(--accent))',
-    border: 'none',
-    borderRadius: 'var(--radius)',
-    color: '#000',
-    fontWeight: 700,
-    fontSize: 14,
-    cursor: 'pointer',
-    textDecoration: 'none',
-    fontFamily: 'var(--font-sans)',
-    display: 'inline-block',
-  },
-  btnSecondary: {
-    padding: '12px 28px',
-    background: 'transparent',
-    border: '1px solid var(--border2)',
-    borderRadius: 'var(--radius)',
-    color: 'var(--text)',
-    fontWeight: 600,
-    fontSize: 14,
-    cursor: 'pointer',
-    textDecoration: 'none',
-    fontFamily: 'var(--font-sans)',
-    display: 'inline-block',
-  },
-  section: { marginBottom: 52 },
-  sectionHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 700,
-    color: 'var(--text)',
-    fontFamily: 'var(--font-sans)',
-  },
-  sectionLink: {
-    fontSize: 13,
-    color: 'var(--accent)',
-    textDecoration: 'none',
-    fontFamily: 'var(--font-mono)',
-  },
-  statsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-    gap: 16,
-    marginBottom: 52,
-  },
-  disclosureGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))',
-    gap: 16,
-  },
-  empty: {
-    textAlign: 'center',
-    padding: '60px 24px',
-    color: 'var(--text3)',
-    fontFamily: 'var(--font-mono)',
-    fontSize: 14,
-    background: 'var(--surface)',
-    borderRadius: 'var(--radius-lg)',
-    border: '1px solid var(--border)',
-  },
-  validity: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 6,
-    padding: '3px 10px',
-    borderRadius: 12,
-    fontSize: 11,
-    fontFamily: 'var(--font-mono)',
-    background: 'rgba(0,255,136,0.08)',
-    color: 'var(--green)',
-    border: '1px solid rgba(0,255,136,0.2)',
-  },
-  howGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-    gap: 16,
-  },
-  step: {
-    background: 'var(--surface)',
-    border: '1px solid var(--border)',
-    borderRadius: 'var(--radius-lg)',
-    padding: '24px',
-  },
-  stepNum: {
-    fontSize: 11,
-    color: 'var(--text3)',
-    fontFamily: 'var(--font-mono)',
-    letterSpacing: '0.1em',
-    marginBottom: 12,
-  },
-  stepIcon: { fontSize: 28, marginBottom: 10 },
-  stepTitle: { fontSize: 15, fontWeight: 700, marginBottom: 8, color: 'var(--text)' },
-  stepDesc: { fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 },
-  loading: {
-    textAlign: 'center',
-    padding: '120px 24px',
-    color: 'var(--text3)',
-    fontFamily: 'var(--font-mono)',
-    fontSize: 14,
-  },
-};
-
-const HOW_IT_WORKS = [
-  { num: '01', icon: '✍️', title: 'Declare', desc: 'Creator declares whether AI was used, which tools, and how much human editing was involved.' },
-  { num: '02', icon: '🔐', title: 'Hash', desc: 'Content is cryptographically hashed using SHA-256, creating a unique tamper-proof fingerprint.' },
-  { num: '03', icon: '⛏️', title: 'Mine', desc: 'A new block is mined with proof-of-work and cryptographically linked to the previous block.' },
-  { num: '04', icon: '✅', title: 'Verify', desc: 'Anyone can verify the disclosure anytime using the block hash or by hashing the original content.' },
-];
+const page = { maxWidth: 960, margin: '0 auto', padding: '40px 24px' };
+const section = { marginBottom: 40 };
+const sectionHeader = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 };
+const sectionTitle = { fontSize: 13, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text3)' };
+const grid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 };
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
@@ -193,72 +37,80 @@ export default function Dashboard() {
   useEffect(() => { load(); }, [load]);
 
   if (loading) {
-    return (
-      <div style={styles.loading}>
-        <div>◌ Connecting to blockchain...</div>
-      </div>
-    );
+    return <div style={{ ...page, color: 'var(--text3)' }}>Loading...</div>;
   }
 
   return (
-    <div style={styles.page} className="animate-in">
-
-      {/* Hero */}
-      <div style={styles.hero}>
-        <div style={styles.heroTag}>⛓ Powered by blockchain</div>
-        <h1 style={styles.heroTitle}>
-          AI Transparency,<br />
-          <span style={styles.heroAccent}>Immutably Recorded</span>
-        </h1>
-        <p style={styles.heroSub}>
-          Declare AI usage in your content. Store it permanently on the blockchain.
-          Anyone can verify — no one can alter.
+    <div style={page}>
+      {/* Header */}
+      <div style={{ marginBottom: 40 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 6 }}>AI Content Disclosure</h1>
+        <p style={{ color: 'var(--text2)', fontSize: 14 }}>
+          Declare and verify AI usage in digital content — permanently recorded on-chain.
         </p>
-        <div style={styles.heroBtns}>
-          <Link to="/submit" style={styles.btnPrimary}>Submit Disclosure</Link>
-          <Link to="/verify" style={styles.btnSecondary}>Verify Content</Link>
+        <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+          <Link to="/submit" style={{
+            padding: '8px 16px',
+            background: 'var(--accent)',
+            color: '#fff',
+            borderRadius: 'var(--radius)',
+            fontSize: 13,
+            fontWeight: 600,
+          }}>
+            Submit disclosure
+          </Link>
+          <Link to="/verify" style={{
+            padding: '8px 16px',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius)',
+            fontSize: 13,
+            color: 'var(--text)',
+          }}>
+            Verify content
+          </Link>
         </div>
       </div>
 
       {/* Stats */}
-      <div style={styles.statsGrid}>
-        <StatCard label="Total Blocks" value={stats?.totalBlocks ?? 0} icon="⛓" sub="Including genesis" accent="var(--accent)" />
-        <StatCard label="Disclosures" value={stats?.totalDisclosures ?? 0} icon="📋" sub="Recorded on chain" accent="var(--accent2)" />
-        <StatCard label="AI Declared" value={stats?.aiUsedCount ?? 0} icon="🤖" sub="Content with AI" accent="var(--accent3)" />
-        <StatCard label="Human Only" value={stats?.humanOnlyCount ?? 0} icon="✍️" sub="No AI used" accent="var(--green)" />
-        <StatCard
-          label="Chain Valid"
-          value={stats?.chainValid ? '✓' : '✗'}
-          icon="🔒"
-          sub="Integrity check"
-          accent={stats?.chainValid ? 'var(--green)' : 'var(--red)'}
-        />
+      <div style={{ ...section }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+          gap: 12,
+        }}>
+          <StatCard label="Total Blocks" value={stats?.totalBlocks ?? 0} sub="incl. genesis" />
+          <StatCard label="Disclosures" value={stats?.totalDisclosures ?? 0} sub="on chain" />
+          <StatCard label="AI Declared" value={stats?.aiUsedCount ?? 0} sub="content with AI" />
+          <StatCard label="Human Only" value={stats?.humanOnlyCount ?? 0} sub="no AI" />
+          <StatCard
+            label="Chain Valid"
+            value={stats?.chainValid ? 'Yes' : 'No'}
+            sub="integrity check"
+          />
+        </div>
       </div>
 
-      {/* Chain Visualizer */}
-      <div style={styles.section}>
-        <div style={styles.sectionHeader}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={styles.sectionTitle}>Live Chain</span>
-            {stats?.chainValid && <span style={styles.validity}>● verified</span>}
-          </div>
-          <Link to="/explorer" style={styles.sectionLink}>view all →</Link>
+      {/* Chain */}
+      <div style={section}>
+        <div style={sectionHeader}>
+          <span style={sectionTitle}>Live Chain</span>
+          <Link to="/explorer" style={{ fontSize: 12, color: 'var(--accent)' }}>View all →</Link>
         </div>
         <ChainVisualizer chain={chain} />
       </div>
 
-      {/* Recent Disclosures */}
-      <div style={styles.section}>
-        <div style={styles.sectionHeader}>
-          <span style={styles.sectionTitle}>Recent Disclosures</span>
-          <Link to="/explorer" style={styles.sectionLink}>view all →</Link>
+      {/* Recent */}
+      <div style={section}>
+        <div style={sectionHeader}>
+          <span style={sectionTitle}>Recent Disclosures</span>
+          <Link to="/explorer" style={{ fontSize: 12, color: 'var(--accent)' }}>View all →</Link>
         </div>
         {disclosures.length === 0 ? (
-          <div style={styles.empty}>
-            No disclosures yet.<br />Be the first to submit one.
+          <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text3)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }}>
+            No disclosures yet.
           </div>
         ) : (
-          <div style={styles.disclosureGrid}>
+          <div style={grid}>
             {disclosures.map((item, i) => (
               <DisclosureCard key={item.blockHash || i} item={item} />
             ))}
@@ -266,23 +118,25 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* How It Works */}
-      <div style={styles.section}>
-        <div style={styles.sectionHeader}>
-          <span style={styles.sectionTitle}>How It Works</span>
+      {/* How it works */}
+      <div style={section}>
+        <div style={{ ...sectionHeader, marginBottom: 16 }}>
+          <span style={sectionTitle}>How It Works</span>
         </div>
-        <div style={styles.howGrid}>
-          {HOW_IT_WORKS.map(({ num, icon, title, desc }) => (
-            <div key={num} style={styles.step}>
-              <div style={styles.stepNum}>{num}</div>
-              <div style={styles.stepIcon}>{icon}</div>
-              <div style={styles.stepTitle}>{title}</div>
-              <div style={styles.stepDesc}>{desc}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+          {[
+            ['01 Declare', 'Creator states whether AI was used, which tools, and how much human editing was done.'],
+            ['02 Hash', 'Content is hashed with SHA-256, creating a tamper-proof fingerprint.'],
+            ['03 Mine', 'A block is mined with proof-of-work and linked to the chain.'],
+            ['04 Verify', 'Anyone can verify using the block hash or by hashing the original content.'],
+          ].map(([title, desc]) => (
+            <div key={title} style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '16px 20px' }}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8 }}>{title}</div>
+              <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>{desc}</div>
             </div>
           ))}
         </div>
       </div>
-
     </div>
   );
 }
