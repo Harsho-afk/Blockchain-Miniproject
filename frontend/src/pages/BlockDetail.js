@@ -152,6 +152,9 @@ export default function BlockDetail() {
                   <div key={entry.blockHash} style={{ ...detailBox, display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
                     <div>
                       <div style={{ fontSize: 12 }}>Version {entry.disclosure?.version || 1}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text2)' }}>
+                        {entry.disclosure?.title || 'Untitled'}
+                      </div>
                       <div style={{ fontSize: 11, color: 'var(--text3)' }}>
                         Block #{entry.blockIndex} · {new Date(entry.timestamp).toLocaleString()}
                       </div>

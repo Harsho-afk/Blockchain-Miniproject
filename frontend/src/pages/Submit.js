@@ -139,7 +139,7 @@ export default function Submit() {
     <div style={{ maxWidth: 640, margin: '0 auto', padding: '40px 24px' }}>
       <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>{editId ? 'Create New Disclosure Version' : 'Submit Disclosure'}</h1>
       <p style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 32 }}>
-        {editId ? 'Edit the current disclosure and record the update as the next immutable version.' : 'Record AI usage permanently on the blockchain.'}
+        {editId ? 'Edit the current disclosure, including the title, and record the update as the next immutable version.' : 'Record AI usage permanently on the blockchain.'}
       </p>
 
       {editId && (
@@ -147,6 +147,9 @@ export default function Submit() {
           <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>Editing disclosure</div>
           <div style={{ fontSize: 13 }}>
             {editingMeta ? `${editingMeta.title} · current v${editingMeta.currentVersion}` : 'Loading latest version...'}
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 8 }}>
+            You can update the title, content, AI usage details, and other metadata. Saving creates a new on-chain version.
           </div>
           {searchParams.get('block') && (
             <Link to={`/blocks/${searchParams.get('block')}`} style={{ fontSize: 12, color: 'var(--accent)', display: 'inline-block', marginTop: 8 }}>
