@@ -1,8 +1,3 @@
-/**
- * Seed script — populates the blockchain with sample disclosures for demo purposes.
- * Run AFTER starting the backend: node seed.js
- */
-
 const samples = [
   {
     title: "The Future of Renewable Energy",
@@ -85,7 +80,7 @@ const samples = [
 ];
 
 async function seed() {
-  console.log("🌱 Seeding blockchain with sample disclosures...\n");
+  console.log("Seeding blockchain with sample disclosures...\n");
 
   for (const sample of samples) {
     try {
@@ -96,25 +91,25 @@ async function seed() {
       });
       const data = await res.json();
       if (data.success) {
-        console.log(`✅ Block #${data.blockIndex} — "${sample.title}"`);
-        console.log(`   Hash: ${data.blockHash.slice(0, 24)}...`);
+        console.log(`Block #${data.blockIndex} — "${sample.title}"`);
+        console.log(`Hash: ${data.blockHash.slice(0, 24)}...`);
       } else {
-        console.log(`❌ Failed: "${sample.title}" — ${data.error}`);
+        console.log(`Failed: "${sample.title}" — ${data.error}`);
       }
     } catch (e) {
-      console.error(`❌ Error seeding "${sample.title}":`, e.message);
+      console.error(`Error seeding "${sample.title}":`, e.message);
     }
 
     // Small delay between submissions
     await new Promise(r => setTimeout(r, 500));
   }
 
-  console.log("\n✅ Seeding complete!");
+  console.log("\nSeeding complete!");
 
   // Print stats
   try {
     const stats = await fetch("http://localhost:3001/api/stats").then(r => r.json());
-    console.log("\n📊 Chain Stats:");
+    console.log("\nChain Stats:");
     console.log(`   Total blocks: ${stats.totalBlocks}`);
     console.log(`   Disclosures:  ${stats.totalDisclosures}`);
     console.log(`   AI used:      ${stats.aiUsedCount}`);

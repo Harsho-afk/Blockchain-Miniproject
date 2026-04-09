@@ -1,80 +1,74 @@
-# ⛓ ChainDisclosure — Blockchain-Based AI Content Disclosure System
+# ChainDisclosure
 
-A trustless, censorship-resistant system for declaring and verifying AI usage in digital content. Disclosures are stored permanently on a local blockchain — immutable, verifiable, and fully open.
+Blockchain-Based AI Content Disclosure System.
 
----
+This project records AI usage declarations for digital content on a custom blockchain. Each disclosure is stored as its own block, linked to the previous block, mined with simple proof-of-work, and persisted to disk so the chain survives backend restarts.
 
-## 🗂 Project Structure
+The system is designed around disclosure and verification, not AI detection. Instead of trying to guess whether content was AI-generated, creators explicitly declare AI use, and that declaration becomes tamper-evident once written to the chain.
 
-```
-blockchain-ai-disclosure/
-├── backend/                  # Node.js + Express API
-│   ├── server.js             # REST API server
-│   ├── blockchain.js         # Core blockchain logic (Block + Blockchain classes)
-│   ├── seed.js               # Sample data seeder
+## What The System Does
+
+- Records AI use declarations for text-based content
+- Links each disclosure to a SHA-256 content hash
+- Stores each disclosure as one block on the blockchain
+- Preserves disclosure history through immutable versioned updates
+- Lets users browse disclosures, open block detail pages, and verify disclosures by block hash
+
+## Project Structure
+
+```text
+Blockchain-Miniproject/
+├── backend/
+│   ├── blockchain.js
+│   ├── server.js
+│   ├── seed.js
+│   ├── data/
+│   │   └── blockchain.json
 │   └── package.json
-│
-├── frontend/                 # React application
-│   └── src/
-│       ├── components/
-│       │   ├── Navbar.js          # Navigation bar with live block count
-│       │   ├── StatCard.js        # Dashboard stat cards
-│       │   ├── DisclosureCard.js  # Single disclosure display card
-│       │   └── ChainVisualizer.js # Interactive block chain diagram
-│       ├── pages/
-│       │   ├── Dashboard.js  # Home page with stats + recent disclosures
-│       │   ├── Submit.js     # Disclosure submission form
-│       │   ├── Verify.js     # Block hash & content verification
-│       │   └── Explorer.js   # Paginated disclosure browser
-│       ├── utils/
-│       │   └── api.js        # Axios API client
-│       └── App.js
-│
-└── package.json              # Root scripts (concurrently)
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── utils/
+│   │   ├── App.js
+│   │   ├── index.css
+│   │   └── index.js
+│   └── package.json
+├── package.json
+└── README.md
 ```
 
----
-
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Install dependencies
 
 ```bash
-# From the root directory
 npm install
-
-# Install backend deps
 cd backend && npm install && cd ..
-
-# Install frontend deps
-cd frontend && npm install --legacy-peer-deps && cd ..
+cd frontend && npm install && cd ..
 ```
 
-### 2. Configure environment (optional)
+### 2. Start the backend and frontend
 
 ```bash
-# Backend
-cp backend/.env.example backend/.env
-
-# Frontend
-cp frontend/.env.example frontend/.env
-```
-
-### 3. Start both servers
-
-```bash
-# From root — starts backend (port 3001) + frontend (port 3000)
 npm start
+```
 
-# Or separately:
-npm run start:backend     # Backend only
-npm run start:frontend    # Frontend only
+Or run them separately:
 
-# Development mode (with nodemon auto-reload):
+```bash
+npm run start:backend
+npm run start:frontend
+```
+
+Development mode:
+
+```bash
 npm run dev
 ```
 
-### 4. Seed sample data (optional)
+### 3. Seed sample disclosures
 
 With the backend running:
 
@@ -83,24 +77,137 @@ cd backend
 node seed.js
 ```
 
-This adds 6 sample disclosures across different content types.
+## How The Blockchain Works
 
----
+### Block Model
 
-## 🌐 API Reference
+Each block contains:
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/health` | Health check |
-| GET | `/api/stats` | Chain statistics |
-| GET | `/api/chain` | Full blockchain |
-| GET | `/api/disclosures` | List disclosures (paginated, filterable) |
-| POST | `/api/disclosures` | Submit new disclosure |
-| GET | `/api/verify/:blockHash` | Verify a block by hash |
-| POST | `/api/verify/content` | Lookup disclosures by content hash |
-| GET | `/api/disclosures/:id` | Get specific disclosure by ID |
+- `index`
+- `timestamp`
+- `data`
+- `previousHash`
+- `nonce`
+- `hash`
 
-### POST /api/disclosures — Request Body
+The block hash is generated from:
+
+```text
+index + previousHash + timestamp + JSON.stringify(data) + nonce
+```
+
+### Mining
+
+Mining uses a simple proof-of-work rule. The block nonce is incremented until the hash starts with the required number of leading zeroes.
+
+Current difficulty:
+
+- `difficulty = 2`
+
+### Chain Integrity
+
+The chain is valid when:
+
+- each block hash matches its recalculated hash
+- each block's `previousHash` matches the hash of the previous block
+
+### Content Hashing
+
+When a disclosure is submitted:
+
+- the submitted text content is hashed with SHA-256
+- the resulting `contentHash` is stored inside the disclosure
+- the disclosure metadata is written into a newly mined block
+
+## Disclosure Model
+
+Each disclosure stores fields such as:
+
+- `disclosureId`
+- `title`
+- `author`
+- `content`
+- `description`
+- `contentType`
+- `aiUsed`
+- `aiTools`
+- `aiPercentage`
+- `humanEditPercentage`
+- `aiUsageDetails`
+- `license`
+- `submittedAt`
+- `version`
+- `previousVersionHash`
+- `contentHash`
+
+## Versioning
+
+This project supports immutable disclosure history.
+
+- The first submission creates version `1`
+- Updating a disclosure creates a new block with the same `disclosureId`
+- Each new version increments the `version` field
+- `previousVersionHash` links a version to the previous disclosure block
+- Block detail pages show version history
+
+This means a disclosure is never edited in place. A new version is appended to the chain instead.
+
+## Persistence
+
+The blockchain is persisted locally to:
+
+```text
+backend/data/blockchain.json
+```
+
+This means:
+
+- normal backend restarts should preserve the chain
+- deleting that file will delete the stored chain
+- this is still local persistence, not distributed blockchain storage
+
+## Frontend Pages
+
+- `/`
+  Dashboard with chain stats, recent disclosures, and chain visualization
+- `/submit`
+  Create a new disclosure or record a new version of an existing disclosure
+- `/verify`
+  Verify a disclosure by block hash
+- `/explorer`
+  Browse disclosure records with search and filtering
+- `/blocks/:blockHash`
+  Open a dedicated block detail page with stored content and version history
+
+## API Reference
+
+### Health and Chain
+
+- `GET /api/health`
+- `GET /api/chain`
+- `GET /api/stats`
+
+### Disclosures
+
+- `GET /api/disclosures`
+  Returns the latest version of each disclosure, paginated
+- `POST /api/disclosures`
+  Creates a new disclosure
+- `PUT /api/disclosures/:disclosureId`
+  Creates a new immutable version of an existing disclosure
+- `GET /api/disclosures/:disclosureId`
+  Returns the latest disclosure plus full version history
+
+### Verification
+
+- `GET /api/verify/:blockHash`
+  Verifies a block and returns the stored disclosure data
+
+Note:
+
+- The backend still includes `POST /api/verify/content`, but the current frontend no longer uses it.
+
+## Example Disclosure Request
 
 ```json
 {
@@ -112,65 +219,8 @@ This adds 6 sample disclosures across different content types.
   "aiUsed": true,
   "aiTools": ["ChatGPT", "Claude"],
   "aiPercentage": 60,
-  "humanEditPercentage": 50,
-  "aiUsageDetails": "Used ChatGPT for first draft, Claude for editing",
+  "humanEditPercentage": 40,
+  "aiUsageDetails": "Used ChatGPT for first draft and Claude for editing",
   "license": "CC BY 4.0"
 }
 ```
-
-### GET /api/disclosures — Query Parameters
-
-| Param | Type | Description |
-|-------|------|-------------|
-| `page` | number | Page number (default: 1) |
-| `limit` | number | Items per page (default: 10) |
-| `aiUsed` | boolean | Filter by AI usage (`true`/`false`) |
-| `search` | string | Search by title, author, or hash |
-
----
-
-## 🔗 How the Blockchain Works
-
-1. **Genesis Block** — Created on server start. Anchors the chain.
-2. **SHA-256 Hashing** — Every block contains: index + previousHash + timestamp + data + nonce, hashed together.
-3. **Proof of Work** — Each block is mined at `difficulty=2` (hash must start with `00`).
-4. **Chain Linking** — Each block stores the previous block's hash, making tampering detectable.
-5. **Verification** — The `/verify/:blockHash` endpoint recalculates and compares hashes, then validates the entire chain.
-
-### Content Hashing
-
-When a disclosure is submitted:
-- The content text is hashed with SHA-256 → `contentHash`
-- The contentHash is stored in the block
-- Users can later verify their content by pasting it — the system rehashes and looks it up
-
----
-
-## 📄 Pages
-
-| Route | Description |
-|-------|-------------|
-| `/` | Dashboard — stats, live chain, recent disclosures, how it works |
-| `/submit` | Submit a new AI disclosure |
-| `/verify` | Verify by block hash or by content |
-| `/explorer` | Browse all disclosures with search + filtering |
-
----
-
-## 🛠 Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Blockchain | Custom implementation in Node.js (SHA-256, PoW) |
-| Backend | Node.js, Express, UUID |
-| Frontend | React 18, React Router v6 |
-| Styling | Inline styles with CSS variables |
-| Fonts | Syne (display), Space Mono (monospace) |
-
----
-
-## ⚠️ Notes
-
-- The blockchain is **in-memory** — data resets on server restart. For production, persist `blockchain.chain` to a database or file.
-- Mining difficulty is set to `2` (two leading zeros) for fast demo response times. Increase for stronger security.
-- This is a demonstration system — a production version would use a distributed peer-to-peer network.

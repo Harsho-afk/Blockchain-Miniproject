@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { verifyBlock, verifyContent } from '../utils/api';
+import { verifyBlock } from '../utils/api';
 
 const input = {
   width: '100%', padding: '8px 12px',
   border: '1px solid var(--border)', borderRadius: 'var(--radius)',
-  color: 'var(--text)', background: 'var(--bg)', fontSize: 13,
+  color: 'var(--text)', background: 'var(--surface)', fontSize: 13,
   outline: 'none', fontFamily: 'inherit',
 };
 
 export default function Verify() {
   const [searchParams] = useSearchParams();
-  const [tab, setTab] = useState('hash');
   const [blockHash, setBlockHash] = useState(searchParams.get('hash') || '');
-  const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
     const h = searchParams.get('hash');
-    if (h) { setBlockHash(h); setTab('hash'); }
+    if (h) { setBlockHash(h); }
   }, [searchParams]);
 
   const verifyByHash = async () => {
@@ -31,51 +29,19 @@ export default function Verify() {
     finally { setLoading(false); }
   };
 
-  const verifyByContent = async () => {
-    if (!content.trim()) return setError('Enter content to verify.');
-    setError(''); setLoading(true); setResult(null);
-    try { setResult({ type: 'content', data: await verifyContent(content.trim()) }); }
-    catch (e) { setError(e.response?.data?.error || 'Verification failed.'); }
-    finally { setLoading(false); }
-  };
-
   return (
     <div style={{ maxWidth: 700, margin: '0 auto', padding: '40px 24px' }}>
       <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Verify Disclosure</h1>
-      <p style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 32 }}>Check any disclosure's authenticity on the blockchain.</p>
+      <p style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 32 }}>Check a disclosure's authenticity by block hash.</p>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--border)', marginBottom: 24 }}>
-        {[['hash', 'By Block Hash'], ['content', 'By Content']].map(([k, lbl]) => (
-          <button key={k} onClick={() => { setTab(k); setResult(null); setError(''); }} style={{
-            padding: '8px 20px', border: 'none', background: 'transparent',
-            color: tab === k ? 'var(--accent)' : 'var(--text3)',
-            fontSize: 13, fontWeight: tab === k ? 600 : 400, cursor: 'pointer',
-            borderBottom: `2px solid ${tab === k ? 'var(--accent)' : 'transparent'}`,
-            marginBottom: -1, fontFamily: 'inherit',
-          }}>{lbl}</button>
-        ))}
+      <div>
+        <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text2)', marginBottom: 6 }}>Block Hash</label>
+        <input style={input} value={blockHash} onChange={e => setBlockHash(e.target.value)} placeholder="Enter block hash..." />
+        {error && <div style={{ color: 'var(--red)', fontSize: 12, marginTop: 8 }}>{error}</div>}
+        <button onClick={verifyByHash} disabled={loading} style={{ marginTop: 12, padding: '8px 16px', background: 'var(--accent)', border: 'none', borderRadius: 'var(--radius)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+          {loading ? 'Verifying...' : 'Verify'}
+        </button>
       </div>
-
-      {tab === 'hash' ? (
-        <div>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text2)', marginBottom: 6 }}>Block Hash</label>
-          <input style={input} value={blockHash} onChange={e => setBlockHash(e.target.value)} placeholder="Enter block hash..." />
-          {error && <div style={{ color: 'var(--red)', fontSize: 12, marginTop: 8 }}>{error}</div>}
-          <button onClick={verifyByHash} disabled={loading} style={{ marginTop: 12, padding: '8px 16px', background: 'var(--accent)', border: 'none', borderRadius: 'var(--radius)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
-            {loading ? 'Verifying...' : 'Verify'}
-          </button>
-        </div>
-      ) : (
-        <div>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text2)', marginBottom: 6 }}>Content</label>
-          <textarea style={{ ...input, minHeight: 120, resize: 'vertical' }} value={content} onChange={e => setContent(e.target.value)} placeholder="Paste the content to check for a disclosure record..." />
-          {error && <div style={{ color: 'var(--red)', fontSize: 12, marginTop: 8 }}>{error}</div>}
-          <button onClick={verifyByContent} disabled={loading} style={{ marginTop: 12, padding: '8px 16px', background: 'var(--accent)', border: 'none', borderRadius: 'var(--radius)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
-            {loading ? 'Searching...' : 'Check content'}
-          </button>
-        </div>
-      )}
 
       {result && result.type === 'hash' && (
         <div style={{ marginTop: 32, border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '24px' }}>
@@ -121,45 +87,29 @@ export default function Verify() {
                     ['Block #', result.data.block?.index],
                     ['Submitted', d.submittedAt ? new Date(d.submittedAt).toLocaleString() : '—'],
                   ].filter(([, v]) => v != null).map(([k, v]) => (
-                    <div key={k} style={{ background: 'var(--surface)', borderRadius: 4, padding: '8px 12px' }}>
+                    <div key={k} style={{ background: 'var(--surface-2)', borderRadius: 4, padding: '8px 12px' }}>
                       <div style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 2 }}>{k}</div>
                       <div style={{ fontSize: 12 }}>{String(v)}</div>
                     </div>
                   ))}
                 </div>
                 {d.aiUsageDetails && (
-                  <div style={{ marginTop: 8, background: 'var(--surface)', borderRadius: 4, padding: '10px 12px' }}>
+                  <div style={{ marginTop: 8, background: 'var(--surface-2)', borderRadius: 4, padding: '10px 12px' }}>
                     <div style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 4 }}>AI Usage Details</div>
                     <div style={{ fontSize: 13, lineHeight: 1.6 }}>{d.aiUsageDetails}</div>
+                  </div>
+                )}
+                {(d.content || d.description) && (
+                  <div style={{ marginTop: 8, background: 'var(--surface-2)', borderRadius: 4, padding: '10px 12px' }}>
+                    <div style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 4 }}>Stored Content</div>
+                    <div style={{ fontSize: 13, lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                      {d.content || d.description}
+                    </div>
                   </div>
                 )}
               </div>
             );
           })()}
-        </div>
-      )}
-
-      {result && result.type === 'content' && (
-        <div style={{ marginTop: 32, border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '24px' }}>
-          <div style={{ fontWeight: 700, marginBottom: 6 }}>
-            {result.data.found ? `${result.data.disclosures.length} disclosure(s) found` : 'No disclosures found'}
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 20, wordBreak: 'break-all' }}>
-            Content hash: {result.data.contentHash}
-          </div>
-          {result.data.disclosures?.map((disc, i) => (
-            <div key={i} style={{ padding: '12px 0', borderTop: '1px solid var(--border)' }}>
-              <div style={{ fontSize: 12, color: 'var(--text2)', marginBottom: 8 }}>Block #{disc.blockIndex}</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                {[['Title', disc.disclosure?.title], ['Author', disc.disclosure?.author], ['AI Used', disc.disclosure?.aiUsed ? 'Yes' : 'No'], ['Hash', disc.blockHash?.slice(0, 16) + '...']].map(([k, v]) => (
-                  <div key={k} style={{ background: 'var(--surface)', borderRadius: 4, padding: '8px 12px' }}>
-                    <div style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 2 }}>{k}</div>
-                    <div style={{ fontSize: 12 }}>{String(v)}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
         </div>
       )}
     </div>

@@ -75,6 +75,8 @@ app.get('/api/disclosures', (req, res) => {
       disclosures = disclosures.filter(d =>
         (d.disclosure.title && d.disclosure.title.toLowerCase().includes(q)) ||
         (d.disclosure.author && d.disclosure.author.toLowerCase().includes(q)) ||
+        (d.disclosure.description && d.disclosure.description.toLowerCase().includes(q)) ||
+        (d.disclosure.content && d.disclosure.content.toLowerCase().includes(q)) ||
         (d.disclosure.contentHash && d.disclosure.contentHash.includes(q))
       );
     }
@@ -133,6 +135,7 @@ app.post('/api/disclosures', (req, res) => {
       title: title || 'Untitled',
       author: author || 'Anonymous',
       contentType: contentType || 'text',
+      content: content || '',
       aiUsed: Boolean(aiUsed),
       aiTools: aiTools || [],
       aiPercentage: aiUsed ? (aiPercentage || 0) : 0,
@@ -141,7 +144,8 @@ app.post('/api/disclosures', (req, res) => {
       aiUsageDetails: aiUsageDetails || '',
       license: license || 'All Rights Reserved',
       submittedAt: new Date().toISOString(),
-      version: 1
+      version: 1,
+      previousVersionHash: null
     };
 
     const block = blockchain.addDisclosureBlock(disclosureData);
@@ -153,6 +157,75 @@ app.post('/api/disclosures', (req, res) => {
       blockIndex: block.index,
       disclosureId,
       contentHash,
+      timestamp: block.timestamp
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /api/disclosures/:disclosureId - create a new version of an existing disclosure
+app.put('/api/disclosures/:disclosureId', (req, res) => {
+  try {
+    const { disclosureId } = req.params;
+    const latest = blockchain.getLatestDisclosureVersion(disclosureId);
+
+    if (!latest) {
+      return res.status(404).json({ error: 'Disclosure not found' });
+    }
+
+    const {
+      content,
+      title,
+      author,
+      contentType,
+      aiUsed,
+      aiTools,
+      aiPercentage,
+      humanEditPercentage,
+      description,
+      aiUsageDetails,
+      license
+    } = req.body;
+
+    if (!content && !title) {
+      return res.status(400).json({ error: 'Either content or title is required' });
+    }
+    if (aiUsed === undefined || aiUsed === null) {
+      return res.status(400).json({ error: 'aiUsed field is required' });
+    }
+
+    const contentHash = generateContentHash(content || title + (description || ''));
+    const disclosureData = {
+      type: 'DISCLOSURE',
+      disclosureId,
+      contentHash,
+      title: title || 'Untitled',
+      author: author || 'Anonymous',
+      contentType: contentType || 'text',
+      content: content || '',
+      aiUsed: Boolean(aiUsed),
+      aiTools: aiTools || [],
+      aiPercentage: aiUsed ? (aiPercentage || 0) : 0,
+      humanEditPercentage: humanEditPercentage || 0,
+      description: description || '',
+      aiUsageDetails: aiUsageDetails || '',
+      license: license || 'All Rights Reserved',
+      submittedAt: new Date().toISOString(),
+      version: (latest.disclosure.version || 1) + 1,
+      previousVersionHash: latest.blockHash
+    };
+
+    const block = blockchain.addDisclosureBlock(disclosureData);
+
+    res.status(201).json({
+      success: true,
+      message: 'Disclosure version recorded on blockchain',
+      blockHash: block.hash,
+      blockIndex: block.index,
+      disclosureId,
+      contentHash,
+      version: disclosureData.version,
       timestamp: block.timestamp
     });
   } catch (err) {
@@ -221,14 +294,13 @@ app.post('/api/verify/content', (req, res) => {
 app.get('/api/disclosures/:disclosureId', (req, res) => {
   try {
     const { disclosureId } = req.params;
-    const all = blockchain.getAllDisclosures();
-    const found = all.filter(d => d.disclosure.disclosureId === disclosureId);
+    const found = blockchain.getDisclosureHistory(disclosureId);
 
     if (!found.length) {
       return res.status(404).json({ error: 'Disclosure not found' });
     }
 
-    res.json({ disclosure: found[0], history: found });
+    res.json({ disclosure: found[found.length - 1], history: found });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -236,9 +308,9 @@ app.get('/api/disclosures/:disclosureId', (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`\n🔗 Blockchain AI Disclosure Server running on port ${PORT}`);
-  console.log(`📡 API: http://localhost:${PORT}/api`);
-  console.log(`⛓️  Genesis block hash: ${blockchain.getLatestBlock().hash}\n`);
+  console.log(`Blockchain AI Disclosure Server running on port ${PORT}`);
+  console.log(`API: http://localhost:${PORT}/api`);
+  console.log(`Genesis block hash: ${blockchain.getLatestBlock().hash}\n`);
 });
 
 module.exports = app;

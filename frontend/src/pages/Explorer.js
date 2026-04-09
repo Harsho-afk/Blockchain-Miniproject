@@ -46,10 +46,10 @@ export default function Explorer() {
           style={{
             flex: 1, minWidth: 200, padding: '7px 12px',
             border: '1px solid var(--border)', borderRadius: 'var(--radius)',
-            color: 'var(--text)', background: 'var(--bg)', fontSize: 13,
+            color: 'var(--text)', background: 'var(--surface)', fontSize: 13,
             outline: 'none', fontFamily: 'inherit',
           }}
-          placeholder="Search by title, author, or hash..."
+          placeholder="Search by title, author, content, or hash..."
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
@@ -58,7 +58,7 @@ export default function Explorer() {
             padding: '7px 14px',
             border: `1px solid ${filter === k ? 'var(--accent)' : 'var(--border)'}`,
             borderRadius: 'var(--radius)',
-            background: filter === k ? '#eff6ff' : 'var(--bg)',
+            background: filter === k ? 'var(--accent-soft)' : 'var(--surface)',
             color: filter === k ? 'var(--accent)' : 'var(--text2)',
             fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', fontWeight: filter === k ? 600 : 400,
           }}>{lbl}</button>
@@ -82,14 +82,14 @@ export default function Explorer() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginTop: 32 }}>
-          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '6px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--bg)', color: 'var(--text)', fontSize: 13, cursor: page === 1 ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>← Prev</button>
+          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '6px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface)', color: 'var(--text)', fontSize: 13, cursor: page === 1 ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>← Prev</button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1).map((p, i, arr) => (
             <React.Fragment key={p}>
               {i > 0 && arr[i - 1] !== p - 1 && <span style={{ padding: '6px 4px', color: 'var(--text3)' }}>…</span>}
-              <button onClick={() => setPage(p)} style={{ padding: '6px 12px', border: `1px solid ${p === page ? 'var(--accent)' : 'var(--border)'}`, borderRadius: 'var(--radius)', background: p === page ? '#eff6ff' : 'var(--bg)', color: p === page ? 'var(--accent)' : 'var(--text)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', fontWeight: p === page ? 600 : 400 }}>{p}</button>
+              <button onClick={() => setPage(p)} style={{ padding: '6px 12px', border: `1px solid ${p === page ? 'var(--accent)' : 'var(--border)'}`, borderRadius: 'var(--radius)', background: p === page ? 'var(--accent-soft)' : 'var(--surface)', color: p === page ? 'var(--accent)' : 'var(--text)', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', fontWeight: p === page ? 600 : 400 }}>{p}</button>
             </React.Fragment>
           ))}
-          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ padding: '6px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--bg)', color: 'var(--text)', fontSize: 13, cursor: page === totalPages ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>Next →</button>
+          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ padding: '6px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface)', color: 'var(--text)', fontSize: 13, cursor: page === totalPages ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>Next →</button>
         </div>
       )}
     </div>

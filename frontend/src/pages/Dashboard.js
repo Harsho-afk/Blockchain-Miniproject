@@ -65,6 +65,7 @@ export default function Dashboard() {
             borderRadius: 'var(--radius)',
             fontSize: 13,
             color: 'var(--text)',
+            background: 'var(--surface)',
           }}>
             Verify content
           </Link>
@@ -130,7 +131,7 @@ export default function Dashboard() {
             ['03 Mine', 'A block is mined with proof-of-work and linked to the chain.'],
             ['04 Verify', 'Anyone can verify using the block hash or by hashing the original content.'],
           ].map(([title, desc]) => (
-            <div key={title} style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '16px 20px' }}>
+            <div key={title} style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '16px 20px', background: 'var(--surface)' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8 }}>{title}</div>
               <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>{desc}</div>
             </div>

@@ -1,1 +1,3 @@
 node_modules/
+.codex/
+backend/data/*.json

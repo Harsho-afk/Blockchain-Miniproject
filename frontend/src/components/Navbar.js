@@ -22,7 +22,8 @@ export default function Navbar() {
   return (
     <nav style={{
       borderBottom: '1px solid var(--border)',
-      background: 'var(--bg)',
+      background: 'rgba(0, 0, 0, 0.92)',
+      backdropFilter: 'blur(14px)',
       position: 'sticky',
       top: 0,
       zIndex: 10,
@@ -47,7 +48,7 @@ export default function Navbar() {
               borderRadius: 'var(--radius)',
               fontSize: 13,
               color: location.pathname === path ? 'var(--accent)' : 'var(--text2)',
-              background: location.pathname === path ? '#eff6ff' : 'transparent',
+              background: location.pathname === path ? 'var(--accent-soft)' : 'transparent',
               fontWeight: location.pathname === path ? 600 : 400,
             }}>
               {label}

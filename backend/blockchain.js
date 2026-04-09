@@ -1,4 +1,6 @@
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 
 class Block {
   constructor(index, timestamp, data, previousHash = '') {
@@ -35,9 +37,55 @@ class Block {
 
 class Blockchain {
   constructor() {
-    this.chain = [this.createGenesisBlock()];
     this.difficulty = 2;
-    this.pendingDisclosures = [];
+    this.storagePath = path.join(__dirname, 'data', 'blockchain.json');
+    this.chain = this.loadChain();
+  }
+
+  hydrateBlock(raw) {
+    const block = new Block(raw.index, raw.timestamp, raw.data, raw.previousHash);
+    block.nonce = raw.nonce;
+    block.hash = raw.hash;
+    return block;
+  }
+
+  loadChain() {
+    try {
+      if (!fs.existsSync(this.storagePath)) {
+        const genesisChain = [this.createGenesisBlock()];
+        this.chain = genesisChain;
+        this.saveChain();
+        return genesisChain;
+      }
+
+      const raw = JSON.parse(fs.readFileSync(this.storagePath, 'utf8'));
+      if (!Array.isArray(raw.chain) || raw.chain.length === 0) {
+        const genesisChain = [this.createGenesisBlock()];
+        this.chain = genesisChain;
+        this.saveChain();
+        return genesisChain;
+      }
+
+      return raw.chain.map(block => this.hydrateBlock(block));
+    } catch (error) {
+      console.error('Failed to load blockchain from disk:', error.message);
+      const genesisChain = [this.createGenesisBlock()];
+      this.chain = genesisChain;
+      this.saveChain();
+      return genesisChain;
+    }
+  }
+
+  saveChain() {
+    const dir = path.dirname(this.storagePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    fs.writeFileSync(
+      this.storagePath,
+      JSON.stringify({ chain: this.chain, savedAt: new Date().toISOString() }, null, 2)
+    );
   }
 
   createGenesisBlock() {
@@ -66,6 +114,7 @@ class Blockchain {
     );
     block.mineBlock(this.difficulty);
     this.chain.push(block);
+    this.saveChain();
     return block;
   }
 
@@ -99,17 +148,47 @@ class Blockchain {
     return this.chain.find(b => b.hash === blockHash) || null;
   }
 
-  getAllDisclosures() {
-    return this.chain
+  formatDisclosureBlock(block) {
+    return {
+      blockIndex: block.index,
+      blockHash: block.hash,
+      previousHash: block.previousHash,
+      timestamp: block.timestamp,
+      nonce: block.nonce,
+      disclosure: block.data
+    };
+  }
+
+  getAllDisclosures({ latestOnly = true } = {}) {
+    const disclosures = this.chain
       .filter(b => b.data && b.data.type !== 'GENESIS')
-      .map(b => ({
-        blockIndex: b.index,
-        blockHash: b.hash,
-        previousHash: b.previousHash,
-        timestamp: b.timestamp,
-        nonce: b.nonce,
-        disclosure: b.data
-      }));
+      .map(b => this.formatDisclosureBlock(b));
+
+    if (!latestOnly) {
+      return disclosures;
+    }
+
+    const latestByDisclosure = new Map();
+    disclosures.forEach(item => {
+      const key = item.disclosure.disclosureId || item.blockHash;
+      const existing = latestByDisclosure.get(key);
+      if (!existing || (item.disclosure.version || 1) > (existing.disclosure.version || 1)) {
+        latestByDisclosure.set(key, item);
+      }
+    });
+
+    return Array.from(latestByDisclosure.values()).sort((a, b) => a.blockIndex - b.blockIndex);
+  }
+
+  getDisclosureHistory(disclosureId) {
+    return this.getAllDisclosures({ latestOnly: false })
+      .filter(d => d.disclosure.disclosureId === disclosureId)
+      .sort((a, b) => (a.disclosure.version || 1) - (b.disclosure.version || 1));
+  }
+
+  getLatestDisclosureVersion(disclosureId) {
+    const history = this.getDisclosureHistory(disclosureId);
+    return history[history.length - 1] || null;
   }
 
   getStats() {

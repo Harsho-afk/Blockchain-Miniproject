@@ -6,6 +6,7 @@ export default function StatCard({ label, value, sub }) {
       border: '1px solid var(--border)',
       borderRadius: 'var(--radius)',
       padding: '16px 20px',
+      background: 'var(--surface)',
     }}>
       <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
         {label}

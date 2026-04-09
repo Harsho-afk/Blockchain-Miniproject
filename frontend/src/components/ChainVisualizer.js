@@ -15,7 +15,7 @@ function Block({ block, isLatest }) {
           height: 56,
           border: `1px solid ${isLatest ? 'var(--accent)' : 'var(--border)'}`,
           borderRadius: 'var(--radius)',
-          background: isLatest ? '#eff6ff' : 'var(--surface)',
+          background: isLatest ? 'var(--accent-soft)' : 'var(--surface)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -42,14 +42,16 @@ function Block({ block, isLatest }) {
           bottom: '110%',
           left: '50%',
           transform: 'translateX(-50%)',
-          background: 'var(--text)',
-          color: 'var(--bg)',
+          background: 'var(--surface-3)',
+          color: 'var(--text)',
+          border: '1px solid var(--border)',
           borderRadius: 4,
           padding: '6px 10px',
           fontSize: 11,
           whiteSpace: 'nowrap',
           zIndex: 10,
           pointerEvents: 'none',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)',
         }}>
           {block.data.title.slice(0, 30)}
         </div>
@@ -66,6 +68,7 @@ export default function ChainVisualizer({ chain = [] }) {
       borderRadius: 'var(--radius)',
       padding: '16px 20px',
       overflowX: 'auto',
+      background: 'var(--surface)',
     }}>
       <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 12 }}>
         Chain — last {visible.length} blocks

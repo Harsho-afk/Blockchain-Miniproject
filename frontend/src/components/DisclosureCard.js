@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 function timeAgo(dateStr) {
@@ -10,8 +10,13 @@ function timeAgo(dateStr) {
 }
 
 export default function DisclosureCard({ item }) {
+  const [expanded, setExpanded] = useState(false);
   const { blockHash, blockIndex, timestamp, disclosure } = item;
   const aiUsed = disclosure?.aiUsed;
+  const previewText = (disclosure?.content || disclosure?.description || '').trim();
+  const hasPreview = previewText.length > 0;
+  const truncated = hasPreview && previewText.length > 240;
+  const shownText = expanded || !truncated ? previewText : `${previewText.slice(0, 240)}...`;
 
   return (
     <div style={{
@@ -21,6 +26,7 @@ export default function DisclosureCard({ item }) {
       display: 'flex',
       flexDirection: 'column',
       gap: 12,
+      background: 'var(--surface)',
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
         <div>
@@ -31,7 +37,7 @@ export default function DisclosureCard({ item }) {
           fontSize: 11,
           padding: '2px 8px',
           borderRadius: 4,
-          background: aiUsed ? '#eff6ff' : '#f0fdf4',
+          background: aiUsed ? 'var(--accent-soft)' : 'var(--green-soft)',
           color: aiUsed ? 'var(--accent)' : 'var(--green)',
           fontWeight: 600,
           whiteSpace: 'nowrap',
@@ -54,6 +60,37 @@ export default function DisclosureCard({ item }) {
         </div>
       )}
 
+      {hasPreview && (
+        <div style={{
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--radius)',
+          background: 'var(--surface-2)',
+          padding: '12px',
+        }}>
+          <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+            Content
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+            {shownText}
+          </div>
+          {truncated && (
+            <button
+              onClick={() => setExpanded(v => !v)}
+              style={{
+                marginTop: 10,
+                padding: 0,
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--accent)',
+                fontSize: 12,
+              }}
+            >
+              {expanded ? 'Show less' : 'Read more'}
+            </button>
+          )}
+        </div>
+      )}
+
       <div style={{
         display: 'flex',
         gap: 16,
@@ -68,12 +105,12 @@ export default function DisclosureCard({ item }) {
         {aiUsed && <span>{disclosure?.aiPercentage ?? 0}% AI</span>}
       </div>
 
-      <Link to={`/verify?hash=${blockHash}`} style={{
+      <Link to={`/blocks/${blockHash}`} style={{
         fontSize: 12,
         color: 'var(--accent)',
         alignSelf: 'flex-start',
       }}>
-        Verify →
+        Open block →
       </Link>
     </div>
   );
