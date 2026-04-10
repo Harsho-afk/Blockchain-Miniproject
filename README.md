@@ -1,4 +1,4 @@
-# ChainDisclosure
+# Blockchain MiniProject
 
 Blockchain-Based AI Content Disclosure System.
 
