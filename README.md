@@ -1,4 +1,4 @@
-# Blockchain MiniProject
+# ProofOfOrigin
 
 Blockchain-Based AI Content Disclosure System.
 
@@ -17,7 +17,7 @@ The system is designed around disclosure and verification, not AI detection. Ins
 ## Project Structure
 
 ```text
-Blockchain-Miniproject/
+ProofOfOrigin/
 ├── backend/
 │   ├── blockchain.js
 │   ├── server.js
